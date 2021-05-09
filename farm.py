@@ -23,6 +23,11 @@ def buy_age():      # option to check current age
 
 
 def consumables():  # kak spent on well being
+    """ Record:
+            population each month
+            average age each month
+            feed each month """
+
     consumable_choice = int(input("1.Feed   2.Miscelleneous: "))
     if consumable_choice == 1:
         print("Enter amount of feed bought (Kg)")
