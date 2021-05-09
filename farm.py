@@ -4,7 +4,7 @@ import openpyxl as opx
 spread = opx.load_workbook('spread.xlsx')
 individual = spread.worksheets[0]
 
-today = datetime.datetime.now().date()   # date
+today = datetime.datetime.now().date()   # date 
 whole = spread.worksheets[1]
 population = whole['B1'].value                  # total number of pigs
 
