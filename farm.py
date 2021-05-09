@@ -3,10 +3,13 @@ import openpyxl as opx
 
 spread = opx.load_workbook('spread.xlsx')
 individual = spread.worksheets[0]
+whole = spread.worksheets[1]
 
 today = datetime.datetime.now().date()   # date
-whole = spread.worksheets[1]
-population = whole['B1'].value                  # total number of pigs
+month = int(datetime.datetime.now().strftime("%m"))  # month number
+# total number of pigs
+population = whole.cell(row=2, column=month + 1).value
+print(population)
 
 
 def buy_age():      # option to check current age
@@ -62,12 +65,14 @@ action = int(input())
 
 if action == 1:
     population += 1     # add to number of pigs
-    whole['B1'].value = population
+    whole.cell(row=2, column=month + 1).value = population
+    # to ensure nxt mnt pop not 0
+    whole.cell(row=2, column=month + 2).value = population
     
     pig_id = int(input("Enter Pig ID: "))
     rw = pig_id + 1
     individual.cell(row=rw, column=1).value = pig_id
-    
+
     purchase_date = today         # code to record date
     buy_age()
 
@@ -76,11 +81,13 @@ elif action == 2:
 
 elif action == 3:
     population -= 1     # add to number of pigs
-    whole['B1'].value = population
+    whole.cell(row=2, column=month + 1).value = population
+    # to ensure nxt mnt pop not 0
+    whole.cell(row=2, column=month + 2).value = population
 
     pig_id = int(input("Enter Pig ID: "))
     rw = pig_id + 1
-    
+
     slaughter_date = today
     individual.cell(row=rw, column=4).value = slaughter_date
     slaughter_weight = float(input("Slaughter Weight of pig: "))
