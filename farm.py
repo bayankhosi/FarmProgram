@@ -9,7 +9,6 @@ today = datetime.datetime.now().date()   # date
 month = int(datetime.datetime.now().strftime("%m"))  # month number
 # total number of pigs
 population = whole.cell(row=2, column=month + 1).value
-print(population)
 
 
 def buy_age():      # option to check current age
