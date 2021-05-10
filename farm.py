@@ -9,7 +9,6 @@ today = datetime.datetime.now().date()   # date
 month = int(datetime.datetime.now().strftime("%m"))  # month number
 # total number of pigs
 population = whole.cell(row=2, column=month + 1).value
-print(population)
 
 
 def buy_age():      # option to check current age
@@ -34,16 +33,19 @@ def consumables():  # kak spent on well being
     consumable_choice = int(input("1.Feed   2.Miscelleneous: "))
     if consumable_choice == 1:
         print("Enter amount of feed bought (Kg)")
-        feed_weight = int(input())
+        feed_weight = int(input()) + whole.cell(row=3, column=month+1).value
         # record the amount
-        # av feed per weeek
+        whole.cell(row=3, column=month+1).value = feed_weight
+
+        print("Enter price of feed bought (E)")
+        feed_price = int(input()) + whole.cell(row=4, column=month+1).value
+        whole.cell(row=4, column=month+1).value = feed_price
         # av feed per pig
-        print(feed_weight)
+        # av feed per pig per pig weight
     elif consumable_choice == 2:
         print("Enter price of item")
-        misc_price = int(input())
-        print(misc_price)
-        # find average per quarter
+        misc_price = int(input()) + whole.cell(row=5, column=month+1).value
+        whole.cell(row=5, column=month+1).value = misc_price
 
 
 def sale():
@@ -68,7 +70,7 @@ if action == 1:
     whole.cell(row=2, column=month + 1).value = population
     # to ensure nxt mnt pop not 0
     whole.cell(row=2, column=month + 2).value = population
-    
+
     pig_id = int(input("Enter Pig ID: "))
     rw = pig_id + 1
     individual.cell(row=rw, column=1).value = pig_id
