@@ -97,4 +97,5 @@ while loop == 2:
         sale()
 
     spread.save('spread.xlsx')
-    loop = int(input("1. Exit,  2. Enter Something else: "))
+    loop = int(input("1. Exit,  2. Enter Something else: ",))
+    print("---------------------------------------------------------------------------------------------------------")
