@@ -12,6 +12,7 @@ month = int(datetime.datetime.now().strftime("%m"))  # month number
 population = whole.cell(row=2, column=month + 1).value
 pig_id = individual['Z1'].value
 
+
 def buy_age():      # option to check current age
     age_bought = int(input("Age of piglet(weeks): "))
     date_born = purchase_date - datetime.timedelta(days=7 * age_bought)
@@ -60,9 +61,31 @@ def sale():
 
     print("Population: ", population)
 
+
+def monitor():
+    View = int(input("1. Individual   2. Whole Month Data :   "))
+    if View == 1:
+        # find age
+        pig_id = int(input("Enter ID of pig you wanna view: "))
+        print("Purchase Date: ", individual.cell(
+            row=pig_id + 1, column=2).value)
+        print("Purchase Price: ", individual.cell(
+            row=pig_id + 1, column=3).value)
+        print("Age:  ")
+
+    elif View == 2:
+        print("Current population:   ", whole.cell(
+            row=2, column=month + 1).value)
+        print("Feed Mass Bought:   ", whole.cell(
+            row=3, column=month + 1).value)
+        print("Price of feed:  ", whole.cell(row=4, column=month + 1).value)
+        print("Total spent:  ", whole.cell(row=4, column=month +
+              1).value + whole.cell(row=5, column=month + 1).value)
+
+
 while loop == 2:
     print("What action are you recording?", '\n',
-        "1. Bought Piglet 2. Bought Consumable 3. Sale")
+          "1. Bought Piglet 2. Bought Consumable 3. Sale 4. View Data")
 
     action = int(input())
 
@@ -98,7 +121,9 @@ while loop == 2:
         slaughter_weight = float(input("Slaughter Weight of pig: "))
         sale()
 
+    elif action == 4:
+        monitor()
+
     spread.save('spread.xlsx')
     loop = int(input("1. Exit,  2. Enter Something else: ",))
     print("---------------------------------------------------------------------------------------------------------")
-    
