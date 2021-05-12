@@ -10,7 +10,7 @@ today = datetime.datetime.now().date()   # date
 month = int(datetime.datetime.now().strftime("%m"))  # month number
 # total number of pigs
 population = whole.cell(row=2, column=month + 1).value
-
+pig_id = individual['Z1'].value
 
 def buy_age():      # option to check current age
     age_bought = int(input("Age of piglet(weeks): "))
@@ -72,9 +72,11 @@ while loop == 2:
         # to ensure nxt mnt pop not 0
         whole.cell(row=2, column=month + 2).value = population
 
-        pig_id = int(input("Enter Pig ID: "))
+        pig_id += 1         # int(input("Enter Pig ID: "))
+        individual['Z1'].value = pig_id
         rw = pig_id + 1
         individual.cell(row=rw, column=1).value = pig_id
+        print("The pig's ID is: ", pig_id)
 
         purchase_date = today         # code to record date
         buy_age()
