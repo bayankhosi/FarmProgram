@@ -67,11 +67,15 @@ def monitor():
     if View == 1:
         # find age
         pig_id = int(input("Enter ID of pig you wanna view: "))
-        print("Purchase Date: ", individual.cell(
-            row=pig_id + 1, column=2).value)
+        print("Purchase Date: ", datetime.datetime.date(individual.cell(
+            row=pig_id + 1, column=2).value))
+
         print("Purchase Price: ", individual.cell(
             row=pig_id + 1, column=3).value)
-        print("Age:  ")
+
+        date_born = datetime.datetime.date(
+            individual.cell(row=pig_id + 1, column=2).value)
+        print("Age:  ", (today-date_born).days, "days")
 
     elif View == 2:
         print("Current population:   ", whole.cell(
