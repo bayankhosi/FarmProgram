@@ -32,7 +32,8 @@ def consumables():  # resources spent on well being
             average age each month
             feed each month """
 
-    consumable_choice = int(input("\nWhich Consumable are you recording?\n1.Feed   2.Miscelleneous: "))
+    consumable_choice = int(
+        input("\nWhich Consumable are you recording?\n1.Feed   2.Miscelleneous: "))
     if consumable_choice == 1:
         print("\nEnter mass of feed bought (Kg)")
         feed_weight = int(input()) + whole.cell(row=3, column=month+1).value
@@ -63,7 +64,8 @@ def sale():
 
 
 def monitor():
-    View = int(input("\nView data for: \n1. Individual Pig   2. Whole Month Data : "))
+    View = int(
+        input("\nView data for: \n1. Individual Pig   2. Whole Month Data : "))
     if View == 1:
         # find age
         pig_id = int(input("\nEnter ID of pig you want to view: "))
