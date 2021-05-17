@@ -34,7 +34,7 @@ def consumables():  # resources spent on well being
 
     consumable_choice = int(input("\nWhich Consumable are you recording?\n1.Feed   2.Miscelleneous: "))
     if consumable_choice == 1:
-        print("\nEnter amount of feed bought (Kg)")
+        print("\nEnter mass of feed bought (Kg)")
         feed_weight = int(input()) + whole.cell(row=3, column=month+1).value
         # record the amount
         whole.cell(row=3, column=month+1).value = feed_weight
