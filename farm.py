@@ -1,7 +1,8 @@
 import datetime
 import openpyxl as opx
+import upload
 
-spread = opx.load_workbook('spread.xlsx')
+spread = opx.load_workbook('./Files/spread.xlsx')
 individual = spread.worksheets[0]
 whole = spread.worksheets[1]
 
@@ -134,6 +135,7 @@ while loop == 2:
     elif action == 4:
         monitor()
 
-    spread.save('spread.xlsx')
+    spread.save('./Files/spread.xlsx')
     loop = int(input("\n1. Exit, 2. For Other Operation: ",))
     print("************************************************************************")
+upload.main()
