@@ -11,10 +11,26 @@ today = datetime.datetime.now().date()   # date
 month = int(datetime.datetime.now().strftime("%m"))  # month number
 # total number of pigs
 population = whole.cell(row=2, column=month + 1).value
-pig_id = individual['Z1'].value
+pig_id = individual['L1'].value
 
 
-def buy_age():      # function for entering piglets
+def buy_age(population, pig_id):      # function for entering piglets
+
+    population += 1     # add to number of pigs
+    whole.cell(row=2, column=month + 1).value = population
+    # to ensure nxt mnt pop not 0
+    whole.cell(row=2, column=month + 2).value = population
+
+    pig_id += 1         # int(input("Enter Pig ID: "))
+    individual['L1'].value = pig_id
+    rw = pig_id + 1
+    individual.cell(row=rw, column=1).value = pig_id
+    print("\nThe pig's ID is: ", pig_id)
+
+    purchase_date = today         # code to record date
+
+
+
     age_bought = int(input("\nEnter Age of piglet (weeks): "))
     date_born = purchase_date - datetime.timedelta(days=7 * age_bought)
     individual.cell(row=rw, column=2).value = date_born
@@ -52,10 +68,30 @@ def consumables():  # resources spent on well being
         whole.cell(row=5, column=month+1).value = misc_price
 
 
-def sale():
-    # mark that number of pigs has decreased
+def sale(population):
     # make averages for that individual pig available
-    # profit on the pig by subtracting av spend on it
+    # profit on the pig by subtracting average spend on it
+
+    population -= 1     # add to number of pigs
+    whole.cell(row=2, column=month + 1).value = population
+    # to ensure nxt mnt pop not 0
+    whole.cell(row=2, column=month + 2).value = population
+
+    pig_id = int(input("\nEnter ID of Pig Slaughtered: "))
+    rw = pig_id + 1
+
+    slaughter_date = today
+    individual.cell(row=rw, column=4).value = slaughter_date
+    slaughter_weight = float(input("\nEnter Slaughter Weight of pig: "))
+
+
+
+    date_born = datetime.datetime.date(
+            individual.cell(row=pig_id + 1, column=2).value)
+    slaughter_age = int((today - date_born).days)
+    print(slaughter_age)
+    individual.cell(row=rw, column=6).value = int(slaughter_age)
+
     individual.cell(row=rw, column=5).value = slaughter_weight
     price_Kg = float(input("\nPrice per Kg: "))
     sale_price = slaughter_weight * price_Kg
@@ -70,14 +106,18 @@ def monitor():
     if View == 1:
         # find age
         pig_id = int(input("\nEnter ID of pig you want to view: "))
-        print("\nPurchase Date: ", datetime.datetime.date(individual.cell(
-            row=pig_id + 1, column=2).value))
+
+        purchase_date = datetime.datetime.date(individual.cell(
+            row=pig_id + 1, column=2).value)
+        
+        print("\nPurchase Date: ", purchase_date)
 
         print("\nPurchase Price: ", individual.cell(
             row=pig_id + 1, column=3).value)
 
         date_born = datetime.datetime.date(
             individual.cell(row=pig_id + 1, column=2).value)
+        
         print("\nAge:  ", (today-date_born).days, "days")
 
     elif View == 2:
@@ -91,46 +131,23 @@ def monitor():
 
 
 while loop == 2:
-    print("""************************************************************************
+    action = int(input("""************************************************************************
             These are the operations that can be performed\n
             [1] - Record New Piglet
             [2] - Record Bought Consumable(s)
             [3] - Record Slaughter and Sale
             [4] - View Data
-        """)
-    action = int(input())
+        """))
 
     if action == 1:
-        population += 1     # add to number of pigs
-        whole.cell(row=2, column=month + 1).value = population
-        # to ensure nxt mnt pop not 0
-        whole.cell(row=2, column=month + 2).value = population
 
-        pig_id += 1         # int(input("Enter Pig ID: "))
-        individual['Z1'].value = pig_id
-        rw = pig_id + 1
-        individual.cell(row=rw, column=1).value = pig_id
-        print("\nThe pig's ID is: ", pig_id)
-
-        purchase_date = today         # code to record date
-        buy_age()
+        buy_age(population, pig_id)
 
     elif action == 2:
         consumables()
 
     elif action == 3:
-        population -= 1     # add to number of pigs
-        whole.cell(row=2, column=month + 1).value = population
-        # to ensure nxt mnt pop not 0
-        whole.cell(row=2, column=month + 2).value = population
-
-        pig_id = int(input("\nEnter ID of Pig Slaughtered: "))
-        rw = pig_id + 1
-
-        slaughter_date = today
-        individual.cell(row=rw, column=4).value = slaughter_date
-        slaughter_weight = float(input("\nEnter Slaughter Weight of pig: "))
-        sale()
+        sale(population)
 
     elif action == 4:
         monitor()
@@ -138,4 +155,6 @@ while loop == 2:
     spread.save('./Files/spread.xlsx')
     loop = int(input("\n1. Exit, 2. For Other Operation: ",))
     print("************************************************************************")
+
+
 upload.main()
