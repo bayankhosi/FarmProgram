@@ -10,7 +10,7 @@ loop = 2
 today = datetime.datetime.now().date()   # date
 month = int(datetime.datetime.now().strftime("%m"))  # month number
 # total number of pigs
-population = whole.cell(row=2, column=month + 1).value
+population = int(whole.cell(row=2, column=month + 1).value)
 pig_id = individual['L1'].value
 
 
@@ -21,15 +21,13 @@ def buy_age(population, pig_id):      # function for entering piglets
     # to ensure nxt mnt pop not 0
     whole.cell(row=2, column=month + 2).value = population
 
-    pig_id += 1         # int(input("Enter Pig ID: "))
+    pig_id += 1
     individual['L1'].value = pig_id
     rw = pig_id + 1
     individual.cell(row=rw, column=1).value = pig_id
     print("\nThe pig's ID is: ", pig_id)
 
     purchase_date = today         # code to record date
-
-
 
     age_bought = int(input("\nEnter Age of piglet (weeks): "))
     date_born = purchase_date - datetime.timedelta(days=7 * age_bought)
@@ -84,10 +82,8 @@ def sale(population):
     individual.cell(row=rw, column=4).value = slaughter_date
     slaughter_weight = float(input("\nEnter Slaughter Weight of pig: "))
 
-
-
     date_born = datetime.datetime.date(
-            individual.cell(row=pig_id + 1, column=2).value)
+        individual.cell(row=pig_id + 1, column=2).value)
     slaughter_age = int((today - date_born).days)
     print(slaughter_age)
     individual.cell(row=rw, column=6).value = int(slaughter_age)
@@ -102,14 +98,14 @@ def sale(population):
 
 def monitor():
     View = int(
-        input("\nView data for: \n1. Individual Pig   2. Whole Month Data : "))
+        input("\nView data for: \n\n1. Individual Pig   2. Whole Month Data : "))
     if View == 1:
         # find age
         pig_id = int(input("\nEnter ID of pig you want to view: "))
 
         purchase_date = datetime.datetime.date(individual.cell(
             row=pig_id + 1, column=2).value)
-        
+
         print("\nPurchase Date: ", purchase_date)
 
         print("\nPurchase Price: ", individual.cell(
@@ -117,16 +113,31 @@ def monitor():
 
         date_born = datetime.datetime.date(
             individual.cell(row=pig_id + 1, column=2).value)
-        
-        print("\nAge:  ", (today-date_born).days, "days")
+
+        if individual.cell(row=pig_id + 1, column=6).value == None:
+            print("\nAge:  ", (today-date_born).days, "days")
+        else:
+            print("\nSlaughter Age:  ", individual.cell(
+                row=pig_id + 1, column=6).value, "days")
+            print("\nSlaughter Weight:  ", individual.cell(
+                row=pig_id + 1, column=5).value, "Kg")
+            print("\nSale Price:  E", individual.cell(
+                row=pig_id + 1, column=7).value)
 
     elif View == 2:
-        print("\nCurrent population:   ", whole.cell(
+        month = int(input("\nEnter month number you want to view: "))
+        
+        print("\nData for", whole.cell(row=1, column=month + 1).value)
+        
+        print("\nPopulation:   ", whole.cell(
             row=2, column=month + 1).value)
+
         print("\nFeed Mass Bought:   ", whole.cell(
-            row=3, column=month + 1).value)
-        print("\nPrice of feed:  ", whole.cell(row=4, column=month + 1).value)
-        print("\nTotal spent:  ", whole.cell(row=4, column=month +
+            row=3, column=month + 1).value, "Kg")
+
+        print("\nPrice of feed:  E", whole.cell(row=4, column=month + 1).value)
+
+        print("\nTotal spent:  E", whole.cell(row=4, column=month +
               1).value + whole.cell(row=5, column=month + 1).value)
 
 
