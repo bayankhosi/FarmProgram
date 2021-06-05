@@ -1,2 +1,0 @@
-pyinstaller farm.py -F
-
