@@ -1,6 +1,7 @@
 import datetime
 import openpyxl as opx
 import upload
+import matplotlib.pyplot as plt
 
 spread = opx.load_workbook('./Files/spread.xlsx')
 individual = spread.worksheets[0]
@@ -70,7 +71,7 @@ def sale(population):
     # make averages for that individual pig available
     # profit on the pig by subtracting average spend on it
 
-    population -= 1     # add to number of pigs
+    population -= 1     # subtract from number of pigs
     whole.cell(row=2, column=month + 1).value = population
     # to ensure nxt mnt pop not 0
     whole.cell(row=2, column=month + 2).value = population
@@ -98,9 +99,14 @@ def sale(population):
 
 def monitor():
     View = int(
-        input("\nView data for: \n\n1. Individual Pig   2. Whole Month Data : "))
+        input("""
+            View data for: 
+                1. Individual Pig   
+                2. Whole Month Data
+                3. Statistics 
+        """))
+
     if View == 1:
-        # find age
         pig_id = int(input("\nEnter ID of pig you want to view: "))
 
         purchase_date = datetime.datetime.date(individual.cell(
@@ -126,9 +132,9 @@ def monitor():
 
     elif View == 2:
         month = int(input("\nEnter month number you want to view: "))
-        
+
         print("\nData for", whole.cell(row=1, column=month + 1).value)
-        
+
         print("\nPopulation:   ", whole.cell(
             row=2, column=month + 1).value)
 
@@ -139,6 +145,47 @@ def monitor():
 
         print("\nTotal spent:  E", whole.cell(row=4, column=month +
               1).value + whole.cell(row=5, column=month + 1).value)
+
+    elif View == 3:
+        graph = int(input(("""
+            Choose a graph
+                1. Mass-Age
+        """)))
+        if graph == 1:
+            analysis.mass_age()
+
+
+class analysis():
+
+    def mass_age():  # slaughter mass - age graph
+        mass = []
+        age = []
+
+        for row in individual.rows:
+            y = row[5].value
+            age.append(y)
+
+            x = row[4].value
+            mass.append(x)
+
+        age.pop(0)
+        age = list(filter(None, age))
+        age.sort()
+
+        mass.pop(0)
+        mass = list(filter(None, mass))
+        mass.sort()
+
+        # print(mass)
+        # print(age)
+
+        plt.scatter(age, mass, c='blue', marker='x', s=100)
+        # Plot the sine of each x point
+        plt.plot(age, mass, color='red', linewidth=2)
+        plt.xlabel('Age')
+        plt.ylabel('Mass')
+        plt.title('Mass - Age')
+        plt.show()                   # Display the plot """
 
 
 while loop == 2:
