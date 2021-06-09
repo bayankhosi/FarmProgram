@@ -114,7 +114,7 @@ def monitor():
 
         print("\nPurchase Date: ", purchase_date)
 
-        print("\nPurchase Price: ", individual.cell(
+        print("\nPurchase Price: E", individual.cell(
             row=pig_id + 1, column=3).value)
 
         date_born = datetime.datetime.date(
