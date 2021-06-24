@@ -20,5 +20,4 @@ for input in range(0, 999):
     individual.cell(row=input+3, column=5).value = weight[input]
     individual.cell(row=input+3, column=6).value = age[input]
 
-
 spread.save('./Files/spread.xlsx')

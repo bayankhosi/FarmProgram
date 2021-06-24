@@ -3,3 +3,4 @@ pyinstaller.docx
 __pycache__/random.cpython-38.pyc
 Files/spreadreal.xlsx
 Files/spread.xlsx
+gene.py
