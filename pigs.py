@@ -1,18 +1,18 @@
-import datetime
 from calendar import monthrange
+import datetime
+import matplotlib.pyplot as plt
 import openpyxl as opx
 import upload
-import matplotlib.pyplot as plt
+import statscalc
 
 spread = opx.load_workbook('./Files/spread.xlsx')
 individual = spread.worksheets[0]
 whole = spread.worksheets[1]
 
 loop = 2
-today = datetime.datetime.now().date()                  # date
-month = int(datetime.datetime.now().strftime("%m"))     # month number
-# total number of pigs
-population = int(whole.cell(row=2, column=month + 1).value)
+today = datetime.datetime.now().date()                          # date
+month = int(datetime.datetime.now().strftime("%m"))             # month number
+population = int(whole.cell(row=2, column=month + 1).value)     # total number of pigs
 pig_id = individual['L1'].value
 
 
@@ -124,7 +124,7 @@ def monitor():
         date_born = datetime.datetime.date(
             individual.cell(row=pig_id + 1, column=2).value)
 
-        print("\nPurchase Date: ", purchase_date)
+        print("\nDate Born: ", purchase_date)
 
         print("\nPurchase Price: E", individual.cell(
             row=pig_id + 1, column=3).value)
@@ -168,101 +168,10 @@ def monitor():
                 2. Feed sumthing
         """)))
         if graph == 1:
-            stats.mass_age()
+            statscalc.stats.mass_age()
 
         if graph == 2:
-            stats.feed_age()
-
-
-class stats():
-    # how much food does a pig eat in its lifetime
-
-    def mass_age():         # slaughter mass - age graph
-        mass = []
-        age = []
-
-        for row in individual.rows:
-            y = row[5].value
-            age.append(y)
-
-            x = row[4].value
-            mass.append(x)
-
-        age.pop(0)
-        age = list(filter(None, age))
-        age.sort()
-
-        mass.pop(0)
-        mass = list(filter(None, mass))
-        mass.sort()
-
-        # print(mass)
-        # print(age)
-
-        plt.scatter(age, mass, c='blue', marker='x', s=100)
-        plt.plot(age, mass, color='red', linewidth=2)
-        plt.xlabel('Age')
-        plt.ylabel('Mass')
-        plt.title('Mass - Age')
-        plt.show()                   # Display the plot """
-
-    def feed_age():         # mass of population * feed against average age
-        popu_feed = []
-        age = []
-
-        for col in whole.columns:
-            y = col[5].value
-            age.append(float(y))
-
-            x = col[7].value
-            popu_feed.append(float(x))
-
-        age.pop(0)
-        age = list(filter(None, age))
-        age.sort()
-
-        popu_feed.pop(0)
-        popu_feed = list(filter(None, popu_feed))
-        popu_feed.sort()
-
-        print(popu_feed)
-        print(age)
-
-        plt.scatter(age, popu_feed, c='blue', marker='x', s=100)
-        plt.plot(age, popu_feed, color='red', linewidth=2)
-        plt.xlabel('Average Age (Days)')
-        plt.ylabel('popu_feed (Kg/Age/Pig)')
-        plt.title('popu_feed - Age')
-        plt.show()                   # Display the plot """
-
-    def average_age():      # should be done ev last day of month
-
-        month = int(input("Enter Month Number for Average Age: "))
-        mnth = str(monthrange(2020, month)[1]//2)
-        monthEnd = "2021/0" + str(month) + "/" + mnth
-        monthEnd = datetime.datetime.strptime(monthEnd, '%Y/%m/%d')
-        monthEnd = datetime.datetime.date(monthEnd)
-
-        ro = 0
-        totAge = 0
-
-        for row in individual.iter_rows(min_row=0, max_row=population+2):
-            y = row[5].value
-            ro += 1
-            if y == None:
-
-                date_born = datetime.datetime.date(
-                    individual.cell(row=ro, column=2).value)
-                currAge = (monthEnd-date_born).days
-                totAge += currAge
-
-        avAge = totAge/population
-        whole.cell(row=6, column=month + 1).value = avAge
-        print(avAge, "days")
-
-        FeedPerAgePig = whole.cell(
-            row=2, column=month + 1).value * whole.cell(row=3, column=month + 1).value/avAge
-        whole.cell(row=8, column=month + 1).value = FeedPerAgePig
+            statscalc.stats.feed_age()
 
 
 while loop == 2:
@@ -293,7 +202,7 @@ while loop == 2:
         except:
             print("Couldn't upload")
 
-        stats.average_age()
+        statscalc.stats.average_age()
     spread.save('./Files/spread.xlsx')
     loop = int(input("\n1. Exit, 2. For Other Operation: ",))
     print("************************************************************************")
