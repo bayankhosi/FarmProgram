@@ -19,6 +19,7 @@ class stats():
     # how much food does a pig eat in its lifetime
 
     def mass_age():         # slaughter mass - age graph
+
         mass = []
         age = []
 
