@@ -1,6 +1,5 @@
 from calendar import monthrange
 import datetime
-import matplotlib.pyplot as plt
 import openpyxl as opx
 import upload
 import statscalc
@@ -16,7 +15,7 @@ population = int(whole.cell(row=2, column=month + 1).value)     # total number o
 pig_id = individual['L1'].value
 
 
-def buy_age(population, pig_id):      # function for entering piglets
+def buy_age(population, pig_id):                                 # function for entering piglets
 
     population += 1     # add to number of pigs
     whole.cell(row=2, column=month + 1).value = population
@@ -43,7 +42,7 @@ def buy_age(population, pig_id):      # function for entering piglets
     return
 
 
-def consumables():                    # resources spent on well being
+def consumables():                                               # resources spent on well being
     """ Record:
             population each month
             average age each month
@@ -105,7 +104,7 @@ def sale(population):
     print("\nNew Population: ", population)
 
 
-def monitor():
+def monitor():                                                   # view collected data
 
     View = int(
         input("""
