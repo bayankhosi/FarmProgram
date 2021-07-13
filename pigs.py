@@ -93,7 +93,7 @@ def sale(population):
     date_born = datetime.datetime.date(
         individual.cell(row=pig_id + 1, column=2).value)
     slaughter_age = int((today - date_born).days)
-    print(slaughter_age)
+    print("\nEnter Slaughter Weight of pig: ", slaughter_age)
     individual.cell(row=rw, column=6).value = int(slaughter_age)
 
     individual.cell(row=rw, column=5).value = slaughter_weight
@@ -146,10 +146,18 @@ def monitor():                                                   # view collecte
         FeedPerPig = whole.cell(row=7, column=month + 1).value
         FeedPerPigAge = whole.cell(row=7, column=month + 1).value
         FeedPrice = whole.cell(row=4, column=month + 1).value
+        
+        if whole.cell(row=6, column=month +1).value == 'None':
+            avAge = statscalc.stats.average_age()
+            whole.cell(row=6, column=month +1).value = avAge
+        else:
+            avAge = whole.cell(row=6, column=month +1).value
 
         print("\nData for", whole.cell(row=1, column=month + 1).value)
 
         print("\nPopulation:   ", Population)
+
+        print("\nAverage Age:   ", avAge)
 
         print("\nFeed Mass Bought:   ", FeedMass, "Kg")
 
@@ -201,7 +209,6 @@ while loop == 2:
         except:
             print("Couldn't upload")
 
-        statscalc.stats.average_age()
     spread.save('./Files/spread.xlsx')
     loop = int(input("\n1. Exit, 2. For Other Operation: ",))
     print("************************************************************************")
