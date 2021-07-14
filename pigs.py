@@ -74,7 +74,7 @@ def consumables():                                               # resources spe
     return
 
 
-def sale(population):
+def sale(population):                                            # info on the slaughter and sale of a pig
     # make averages for that individual pig available
     # profit on the pig by subtracting average spend on it
 
