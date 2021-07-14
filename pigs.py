@@ -15,7 +15,7 @@ population = int(whole.cell(row=2, column=month + 1).value)     # total number o
 pig_id = individual['L1'].value
 
 
-def buy_age(population, pig_id):                                 # function for entering piglets
+def buy_age(population, pig_id):                                 # recording entering piglets
 
     population += 1     # add to number of pigs
     whole.cell(row=2, column=month + 1).value = population
@@ -74,7 +74,7 @@ def consumables():                                               # resources spe
     return
 
 
-def sale(population):                                            # info on the slaughter and sale of a pig
+def sale(population):                                            # info on slaughter and sale
     # make averages for that individual pig available
     # profit on the pig by subtracting average spend on it
 
