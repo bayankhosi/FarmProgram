@@ -90,5 +90,5 @@ def main():
         my_drive.upload_file(item, path)
 
 
-if __name__ == '__main__':
-    main()
+""" if __name__ == '__main__':
+    main() """
