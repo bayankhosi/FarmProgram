@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 today = datetime.datetime.now().date()                          # date
 month = int(datetime.datetime.now().strftime("%m"))             # month number
-year = int(datetime.datetime.now().strftime("%Y"))              # year
+year = int(datetime.datetime.now().strftime("%Y"))              # Year
 
 spread = opx.load_workbook('./Files/spread.xlsx')
 individual = spread.worksheets[0]
