@@ -4,13 +4,14 @@ import openpyxl as opx
 import upload
 import statscalc
 
-spread = opx.load_workbook('./Files/spread.xlsx')
-individual = spread.worksheets[0]
-whole = spread.worksheets[1]
-
 loop = 2
 today = datetime.datetime.now().date()                          # date
 month = int(datetime.datetime.now().strftime("%m"))             # month number
+year = int(datetime.datetime.now().strftime("%Y"))              # year
+
+spread = opx.load_workbook('./Files/spread.xlsx')
+individual = spread.worksheets[0]                               # opens current year sheet
+whole = spread.worksheets[year - 2020]
 population = int(whole.cell(row=2, column=month + 1).value)     # total number of pigs
 pig_id = individual['L1'].value
 
@@ -93,7 +94,7 @@ def sale(population):                                            # info on slaug
     date_born = datetime.datetime.date(
         individual.cell(row=pig_id + 1, column=2).value)
     slaughter_age = int((today - date_born).days)
-    print("\nEnter Slaughter Weight of pig: ", slaughter_age)
+    print("\nEnter Slaughter Age of pig: ", slaughter_age, "days")
     individual.cell(row=rw, column=6).value = int(slaughter_age)
 
     individual.cell(row=rw, column=5).value = slaughter_weight

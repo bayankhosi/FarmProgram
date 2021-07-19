@@ -4,12 +4,13 @@ import openpyxl as opx
 import numpy as np
 import matplotlib.pyplot as plt
 
+today = datetime.datetime.now().date()                          # date
+month = int(datetime.datetime.now().strftime("%m"))             # month number
+year = int(datetime.datetime.now().strftime("%Y"))              # year
+
 spread = opx.load_workbook('./Files/spread.xlsx')
 individual = spread.worksheets[0]
 whole = spread.worksheets[1]
-
-today = datetime.datetime.now().date()                          # date
-month = int(datetime.datetime.now().strftime("%m"))             # month number
 population = int(whole.cell(row=2, column=month + 1).value)     # total number of pigs
 pig_id = individual['L1'].value
 
