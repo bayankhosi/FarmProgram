@@ -1,20 +1,22 @@
+from calendar import monthrange
 import datetime
 import openpyxl as opx
 import upload
-
-spread = opx.load_workbook('./Files/spread.xlsx')
-individual = spread.worksheets[0]
-whole = spread.worksheets[1]
+import statscalc
 
 loop = 2
-today = datetime.datetime.now().date()   # date
-month = int(datetime.datetime.now().strftime("%m"))  # month number
-# total number of pigs
-population = int(whole.cell(row=2, column=month + 1).value)
+today = datetime.datetime.now().date()                          # date
+month = int(datetime.datetime.now().strftime("%m"))             # month number
+year = int(datetime.datetime.now().strftime("%Y"))              # year
+
+spread = opx.load_workbook('./Files/spread.xlsx')
+individual = spread.worksheets[0]                               # opens current year sheet
+whole = spread.worksheets[year - 2020]
+population = int(whole.cell(row=2, column=month + 1).value)     # total number of pigs
 pig_id = individual['L1'].value
 
 
-def buy_age(population, pig_id):      # function for entering piglets
+def buy_age(population, pig_id):                                 # recording entering piglets
 
     population += 1     # add to number of pigs
     whole.cell(row=2, column=month + 1).value = population
@@ -41,7 +43,7 @@ def buy_age(population, pig_id):      # function for entering piglets
     return
 
 
-def consumables():  # resources spent on well being
+def consumables():                                               # resources spent on well being
     """ Record:
             population each month
             average age each month
@@ -58,19 +60,26 @@ def consumables():  # resources spent on well being
         print("\nEnter price of feed bought (E)")
         feed_price = int(input()) + whole.cell(row=4, column=month+1).value
         whole.cell(row=4, column=month+1).value = feed_price
-        # av feed per pig
+
+        FeedPerPig = whole.cell(row=3, column=month + 1).value / \
+            whole.cell(row=2, column=month + 1).value
+        whole.cell(row=7, column=month + 1).value = FeedPerPig
+
         # av feed per pig per pig weight
+
     elif consumable_choice == 2:
         print("\nEnter price of item (E)")
         misc_price = int(input()) + whole.cell(row=5, column=month+1).value
         whole.cell(row=5, column=month+1).value = misc_price
 
+    return
 
-def sale(population):
+
+def sale(population):                                            # info on slaughter and sale
     # make averages for that individual pig available
     # profit on the pig by subtracting average spend on it
 
-    population -= 1     # add to number of pigs
+    population -= 1     # subtract from number of pigs
     whole.cell(row=2, column=month + 1).value = population
     # to ensure nxt mnt pop not 0
     whole.cell(row=2, column=month + 2).value = population
@@ -85,7 +94,7 @@ def sale(population):
     date_born = datetime.datetime.date(
         individual.cell(row=pig_id + 1, column=2).value)
     slaughter_age = int((today - date_born).days)
-    print(slaughter_age)
+    print("\nEnter Slaughter Age of pig: ", slaughter_age, "days")
     individual.cell(row=rw, column=6).value = int(slaughter_age)
 
     individual.cell(row=rw, column=5).value = slaughter_weight
@@ -96,26 +105,33 @@ def sale(population):
     print("\nNew Population: ", population)
 
 
-def monitor():
+def monitor():                                                   # view collected data
+
     View = int(
-        input("\nView data for: \n\n1. Individual Pig   2. Whole Month Data : "))
-    if View == 1:
-        # find age
+        input("""
+            View data for: 
+                1. Individual Pig   
+                2. Whole Month Data
+                3. Statistics 
+        """))
+
+    if View == 1:       # individual pig data
         pig_id = int(input("\nEnter ID of pig you want to view: "))
 
         purchase_date = datetime.datetime.date(individual.cell(
             row=pig_id + 1, column=2).value)
 
-        print("\nPurchase Date: ", purchase_date)
-
-        print("\nPurchase Price: ", individual.cell(
-            row=pig_id + 1, column=3).value)
-
         date_born = datetime.datetime.date(
             individual.cell(row=pig_id + 1, column=2).value)
 
+        print("\nDate Born: ", purchase_date)
+
+        print("\nPurchase Price: E", individual.cell(
+            row=pig_id + 1, column=3).value)
+
         if individual.cell(row=pig_id + 1, column=6).value == None:
-            print("\nAge:  ", (today-date_born).days, "days")
+            currAge = (today-date_born).days
+            print("\nAge:  ", currAge, "days")
         else:
             print("\nSlaughter Age:  ", individual.cell(
                 row=pig_id + 1, column=6).value, "days")
@@ -124,21 +140,46 @@ def monitor():
             print("\nSale Price:  E", individual.cell(
                 row=pig_id + 1, column=7).value)
 
-    elif View == 2:
+    elif View == 2:     # month data
         month = int(input("\nEnter month number you want to view: "))
+        Population = whole.cell(row=2, column=month + 1).value
+        FeedMass = whole.cell(row=3, column=month + 1).value
+        FeedPerPig = whole.cell(row=7, column=month + 1).value
+        FeedPerPigAge = whole.cell(row=7, column=month + 1).value
+        FeedPrice = whole.cell(row=4, column=month + 1).value
         
+        if whole.cell(row=6, column=month +1).value == 'None':
+            avAge = statscalc.stats.average_age()
+            whole.cell(row=6, column=month +1).value = avAge
+        else:
+            avAge = whole.cell(row=6, column=month +1).value
+
         print("\nData for", whole.cell(row=1, column=month + 1).value)
-        
-        print("\nPopulation:   ", whole.cell(
-            row=2, column=month + 1).value)
 
-        print("\nFeed Mass Bought:   ", whole.cell(
-            row=3, column=month + 1).value, "Kg")
+        print("\nPopulation:   ", Population)
 
-        print("\nPrice of feed:  E", whole.cell(row=4, column=month + 1).value)
+        print("\nAverage Age:   ", avAge)
+
+        print("\nFeed Mass Bought:   ", FeedMass, "Kg")
+
+        print("\nAverage feed per pig: ", FeedPerPig, "Kg/pig")
+
+        print("\nPrice of feed:  E", FeedPrice)
 
         print("\nTotal spent:  E", whole.cell(row=4, column=month +
               1).value + whole.cell(row=5, column=month + 1).value)
+
+    elif View == 3:     # statistics
+        graph = int(input(("""
+            Choose a graph
+                1. Mass-Age
+                2. Feed sumthing
+        """)))
+        if graph == 1:
+            statscalc.stats.mass_age()
+
+        if graph == 2:
+            statscalc.stats.feed_age()
 
 
 while loop == 2:
@@ -163,9 +204,18 @@ while loop == 2:
     elif action == 4:
         monitor()
 
+    elif action == 5:
+        try:
+            upload.main()
+        except:
+            print("Couldn't upload")
+
     spread.save('./Files/spread.xlsx')
     loop = int(input("\n1. Exit, 2. For Other Operation: ",))
     print("************************************************************************")
 
 
-upload.main()
+try:
+    upload.main()
+except:
+    print("Couldn't upload")
