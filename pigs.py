@@ -51,7 +51,7 @@ def consumables():                                               # resources spe
 
     consumable_choice = int(
         input("\nWhich Consumable are you recording?\n1.Feed   2.Miscelleneous: "))
-        
+
     if consumable_choice == 1:
         print("\nEnter mass of feed bought (Kg)")
         feed_weight = int(input()) + whole.cell(row=3, column=month+1).value
@@ -80,30 +80,34 @@ def sale(population):                                            # info on slaug
     # make averages for that individual pig available
     # profit on the pig by subtracting average spend on it
 
-    population -= 1     # subtract from number of pigs
-    whole.cell(row=2, column=month + 1).value = population
-    # to ensure nxt mnt pop not 0
-    whole.cell(row=2, column=month + 2).value = population
-
     pig_id = int(input("\nEnter ID of Pig Slaughtered: "))
     rw = pig_id + 1
 
-    slaughter_date = today
-    individual.cell(row=rw, column=4).value = slaughter_date
-    slaughter_weight = float(input("\nEnter Slaughter Weight of pig: "))
+    if individual.cell(row=rw, column=4).value == 'None':
+        population -= 1     # subtract from number of pigs
+        whole.cell(row=2, column=month + 1).value = population
+        # to ensure nxt mnt pop not 0
+        whole.cell(row=2, column=month + 2).value = population
 
-    date_born = datetime.datetime.date(
-        individual.cell(row=pig_id + 1, column=2).value)
-    slaughter_age = int((today - date_born).days)
-    print("\nEnter Slaughter Age of pig: ", slaughter_age, "days")
-    individual.cell(row=rw, column=6).value = int(slaughter_age)
+        slaughter_date = today
+        individual.cell(row=rw, column=4).value = slaughter_date
+        slaughter_weight = float(input("\nEnter Slaughter Weight of pig: "))
 
-    individual.cell(row=rw, column=5).value = slaughter_weight
-    price_Kg = float(input("\nPrice per Kg: "))
-    sale_price = slaughter_weight * price_Kg
-    individual.cell(row=rw, column=7).value = sale_price
+        date_born = datetime.datetime.date(
+            individual.cell(row=pig_id + 1, column=2).value)
+        slaughter_age = int((today - date_born).days)
+        print("\nEnter Slaughter Age of pig: ", slaughter_age, "days")
+        individual.cell(row=rw, column=6).value = int(slaughter_age)
 
-    print("\nNew Population: ", population)
+        individual.cell(row=rw, column=5).value = slaughter_weight
+        price_Kg = float(input("\nPrice per Kg: "))
+        sale_price = slaughter_weight * price_Kg
+        individual.cell(row=rw, column=7).value = sale_price
+
+        print("\nNew Population: ", population)
+    
+    else:
+        print("\nThis ID is for a pig that has already been slaughtered.\nTry again.")
 
 
 def monitor():                                                   # view collected data
@@ -200,6 +204,7 @@ while loop == 2:
         consumables()
 
     elif action == 3:
+        
         sale(population)
 
     elif action == 4:
