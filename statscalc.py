@@ -34,15 +34,10 @@ class stats():
         age.pop(0)
         age = list(filter(None, age))
         age.sort()
-        age_arr = np.array(age)
 
         mass.pop(0)
         mass = list(filter(None, mass))
         mass.sort()
-        mass_arr = np.array(mass)
-
-        """ print(mass_arr)
-        print(age_arr) """
 
         plt.scatter(age, mass, c='blue', marker='x', s=100)
         plt.plot(age, mass, color='red', linewidth=2)

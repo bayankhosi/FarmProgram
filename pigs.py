@@ -183,8 +183,8 @@ def monitor():                                                   # view collecte
         if graph == 1:
             statscalc.stats.mass_age()
 
-        if graph == 2:
-            statscalc.stats.feed_age()
+        """ if graph == 2:
+            statscalc.stats.feed_age() """
 
 
 while loop == 2:
