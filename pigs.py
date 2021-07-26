@@ -6,8 +6,8 @@ import statscalc
 
 loop = 2
 today = datetime.datetime.now().date()                          # date
-month = int(datetime.datetime.now().strftime("%m"))             # month number
-year = int(datetime.datetime.now().strftime("%Y"))              # year
+month = datetime.datetime.now().month                           # month number
+year = datetime.datetime.now().year                             # year
 
 spread = opx.load_workbook('./Files/spread.xlsx')
 individual = spread.worksheets[0]                               # opens current year sheet
@@ -178,7 +178,6 @@ def monitor():                                                   # view collecte
         graph = int(input(("""
             Choose a graph
                 1. Mass-Age
-                2. Feed sumthing
         """)))
         if graph == 1:
             statscalc.stats.mass_age()
