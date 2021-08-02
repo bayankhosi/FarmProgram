@@ -5,26 +5,26 @@ import upload
 import statscalc
 
 loop = 2
-today = datetime.datetime.now().date()                          # date
+date_format = '%d/%m/%Y'
+today = datetime.datetime.now().date()
 month = datetime.datetime.now().month                           # month number
 year = datetime.datetime.now().year                             # year
 
 spread = opx.load_workbook('./Files/spread.xlsx')
 individual = spread.worksheets[0]                               # opens current year sheet
 whole = spread.worksheets[year - 2020]
-population = int(whole.cell(row=2, column=month + 1).value)     # total number of pigs
-pig_id = individual['L1'].value
-
+population = int(whole.cell(column=2, row=month + 1).value)     # total number of pigs
+pig_id = individual['H1'].value
 
 def buy_age(population, pig_id):                                 # recording entering piglets
 
     population += 1     # add to number of pigs
-    whole.cell(row=2, column=month + 1).value = population
+    whole.cell(column=2, row=month + 1).value = population
     # to ensure nxt mnt pop not 0
-    whole.cell(row=2, column=month + 2).value = population
+    whole.cell(column=2, row=month + 2).value = population
 
     pig_id += 1
-    individual['L1'].value = pig_id
+    individual['H1'].value = pig_id
     rw = pig_id + 1
     individual.cell(row=rw, column=1).value = pig_id
     print("\nThe pig's ID is: ", pig_id)
@@ -54,24 +54,24 @@ def consumables():                                               # resources spe
 
     if consumable_choice == 1:
         print("\nEnter mass of feed bought (Kg)")
-        feed_weight = int(input()) + whole.cell(row=3, column=month+1).value
+        feed_weight = int(input()) + whole.cell(column=3, row=month+1).value
         # record the amount
-        whole.cell(row=3, column=month+1).value = feed_weight
+        whole.cell(column=3, row=month+1).value = feed_weight
 
         print("\nEnter price of feed bought (E)")
-        feed_price = int(input()) + whole.cell(row=4, column=month+1).value
-        whole.cell(row=4, column=month+1).value = feed_price
+        feed_price = int(input()) + whole.cell(column=4, row=month+1).value
+        whole.cell(column=4, row=month+1).value = feed_price
 
-        FeedPerPig = whole.cell(row=3, column=month + 1).value / \
-            whole.cell(row=2, column=month + 1).value
-        whole.cell(row=7, column=month + 1).value = FeedPerPig
+        FeedPerPig = whole.cell(column=3, row=month + 1).value / \
+            whole.cell(column=2, row=month + 1).value
+        whole.cell(column=7, row=month + 1).value = FeedPerPig
 
         # av feed per pig per pig weight
 
     elif consumable_choice == 2:
         print("\nEnter price of item (E)")
-        misc_price = int(input()) + whole.cell(row=5, column=month+1).value
-        whole.cell(row=5, column=month+1).value = misc_price
+        misc_price = int(input()) + whole.cell(column=5, row=month+1).value
+        whole.cell(column=5, row=month+1).value = misc_price
 
     return
 
@@ -83,11 +83,11 @@ def sale(population):                                            # info on slaug
     pig_id = int(input("\nEnter ID of Pig Slaughtered: "))
     rw = pig_id + 1
 
-    if individual.cell(row=rw, column=4).value == 'None':
+    if individual.cell(row=rw, column=4).value == None:
         population -= 1     # subtract from number of pigs
-        whole.cell(row=2, column=month + 1).value = population
+        whole.cell(column=2, row=month + 1).value = population
         # to ensure nxt mnt pop not 0
-        whole.cell(row=2, column=month + 2).value = population
+        whole.cell(column=2, row=month + 2).value = population
 
         slaughter_date = today
         individual.cell(row=rw, column=4).value = slaughter_date
@@ -147,19 +147,19 @@ def monitor():                                                   # view collecte
 
     elif View == 2:     # month data
         month = int(input("\nEnter month number you want to view: "))
-        Population = whole.cell(row=2, column=month + 1).value
-        FeedMass = whole.cell(row=3, column=month + 1).value
-        FeedPerPig = whole.cell(row=7, column=month + 1).value
-        FeedPerPigAge = whole.cell(row=7, column=month + 1).value
-        FeedPrice = whole.cell(row=4, column=month + 1).value
+        Population = whole.cell(column=2, row=month + 1).value
+        FeedMass = whole.cell(column=3, row=month + 1).value
+        FeedPerPig = whole.cell(column=7, row=month + 1).value
+        FeedPerPigAge = whole.cell(column=7, row=month + 1).value
+        FeedPrice = whole.cell(column=4, row=month + 1).value
         
-        if whole.cell(row=6, column=month +1).value == 'None':
-            avAge = statscalc.stats.average_age()
-            whole.cell(row=6, column=month +1).value = avAge
+        if whole.cell(column=6, row=month +1).value == None:
+            avAge = statscalc.stats.average_age(month)
+            whole.cell(column=6, row=month +1).value = avAge
         else:
-            avAge = whole.cell(row=6, column=month +1).value
+            avAge = whole.cell(column=6, row=month +1).value
 
-        print("\nData for", whole.cell(row=1, column=month + 1).value)
+        print("\nData for", whole.cell(column=1, row=month + 1).value)
 
         print("\nPopulation:   ", Population)
 
@@ -171,8 +171,8 @@ def monitor():                                                   # view collecte
 
         print("\nPrice of feed:  E", FeedPrice)
 
-        print("\nTotal spent:  E", whole.cell(row=4, column=month +
-              1).value + whole.cell(row=5, column=month + 1).value)
+        print("\nTotal spent:  E", whole.cell(column=4, row=month +
+              1).value + whole.cell(column=5, row=month + 1).value)
 
     elif View == 3:     # statistics
         graph = int(input(("""

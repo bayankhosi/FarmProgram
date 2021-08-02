@@ -2,17 +2,27 @@ import datetime
 from calendar import monthrange
 import openpyxl as opx
 import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd
+from _plotly_future_ import remove_deprecations
+from plotly import express as px
 
-today = datetime.datetime.now().date()                          # date
+today = datetime.datetime.now()                          # date
 month = int(datetime.datetime.now().strftime("%m"))             # month number
 year = int(datetime.datetime.now().strftime("%Y"))              # Year
 
 spread = opx.load_workbook('./Files/spread.xlsx')
 individual = spread.worksheets[0]
 whole = spread.worksheets[1]
-population = int(whole.cell(row=2, column=month + 1).value)     # total number of pigs
-pig_id = individual['L1'].value
+population = int(whole.cell(column=2, row=month + 1).value)     # total number of pigs
+pig_id = individual['H1'].value
+
+df = pd.read_excel('./Files/spread.xlsx', 
+                   sheet_name= 'individual')
+df_month = pd.read_excel('./Files/spread.xlsx', 
+                         sheet_name= '2021')
+df_alive = df.loc[df.slaughter_date.isnull()].filter(
+    ['ID', 'birth_date', 'purchase_price'])
+df_slaughtered = df.loc[df.slaughter_date.isnull()==False]
 
 
 
@@ -21,60 +31,18 @@ class stats():
 
     def mass_age():         # slaughter mass - age graph
 
-        mass = []
-        age = []
+        px.scatter(x=df_slaughtered.slaughter_age,
+        y=df_slaughtered.slaughter_weight,
+        title='Mass Against Age',
+        labels={'x':'Age(days)', 'y':'Mass(Kg)'}
+        ).show()
 
-        for row in individual.rows:
-            y = row[5].value
-            age.append(y)
-
-            x = row[4].value
-            mass.append(x)
-
-        age.pop(0)
-        age = list(filter(None, age))
-        age.sort()
-
-        mass.pop(0)
-        mass = list(filter(None, mass))
-        mass.sort()
-
-        plt.scatter(age, mass, c='blue', marker='x', s=100)
-        plt.plot(age, mass, color='red', linewidth=2)
-        plt.xlabel('Age')
-        plt.ylabel('Mass')
-        plt.title('Mass - Age')
-        plt.show()                   # Display the plot """
-
-    def feed_age():         # mass of population * feed against average age
-        popu_feed = []
-        age = []
-
-        for col in whole.columns:
-            y = col[5].value
-            age.append(y)
-
-            x = col[7].value
-            popu_feed.append(x)
-
-        age.pop(0)
-        age = list(filter(None, age))
-        age.sort()
-        age_arr = np.array(age)
-
-        popu_feed.pop(0)
-        popu_feed = list(filter(None, popu_feed))
-        popu_feed.sort()
-        popu_feed_arr = np.array(popu_feed)
-
-        plt.scatter(age, popu_feed, c='blue', marker='x', s=100)
-        plt.plot(age, popu_feed, color='red', linewidth=2)
-        plt.xlabel('Average Age (Days)')
-        plt.ylabel('popu_feed (Kg/Age/Pig)')
-        plt.title('popu_feed - Age')
-        plt.show()                   # Display the plot """
 
     def average_age(month):      # should be done ev half of month
+
+        """df_alive['age'] = today - pd.to_datetime(df.birth_date)
+
+        avAge = df_alive.age.mean()"""
 
         mnth = str(monthrange(2021, month)[1]//2)
         monthEnd = "2021/0" + str(month) + "/" + mnth
@@ -97,8 +65,5 @@ class stats():
         avAge = totAge/population
         whole.cell(row=6, column=month + 1).value = avAge
 
-        """ FeedPerAgePig = whole.cell(
-            row=2, column=month + 1).value * whole.cell(row=3, column=month + 1).value/avAge
-        whole.cell(row=8, column=month + 1).value = FeedPerAgePig """
 
         return avAge
