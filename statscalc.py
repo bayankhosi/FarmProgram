@@ -1,10 +1,9 @@
 import datetime
 from calendar import monthrange
 import openpyxl as opx
-import numpy as np
 import pandas as pd
-from _plotly_future_ import remove_deprecations
-from plotly import express as px
+import matplotlib.pyplot as plt
+from plotly import plot
 
 today = datetime.datetime.now()                          # date
 month = int(datetime.datetime.now().strftime("%m"))             # month number
@@ -27,15 +26,21 @@ df_slaughtered = df.loc[df.slaughter_date.isnull()==False]
 
 
 class stats():
-    # how much food does a pig eat in its lifetime
+    # find how much food does a pig eat in its lifetime
 
-    def mass_age():         # slaughter mass - age graph
+    def mass_age():              # slaughter mass - age graph
 
-        px.scatter(x=df_slaughtered.slaughter_age,
-        y=df_slaughtered.slaughter_weight,
-        title='Mass Against Age',
-        labels={'x':'Age(days)', 'y':'Mass(Kg)'}
-        ).show()
+        """ df_slaughtered.plot(kind= 'scatter',
+        x= 'slaughter_age',
+        y= 'slaughter_weight')
+        plt.show() """
+        plt.scatter(x=df_slaughtered.slaughter_age,
+                    y=df_slaughtered.slaughter_weight,
+                    )
+        plt.gca().update(dict(title= "Mass-Age Graph",
+                        xlabel= "Slaughter Age (days)",
+                        ylabel= "Slaughter Mass (Kg)"))
+        plt.show()
 
 
     def average_age(month):      # should be done ev half of month
@@ -67,3 +72,4 @@ class stats():
 
 
         return avAge
+
