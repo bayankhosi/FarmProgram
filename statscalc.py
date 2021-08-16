@@ -3,7 +3,9 @@ from calendar import monthrange
 import openpyxl as opx
 import pandas as pd
 import matplotlib.pyplot as plt
-from plotly import plot
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import train_test_split
+
 
 today = datetime.datetime.now()                          # date
 month = int(datetime.datetime.now().strftime("%m"))             # month number
@@ -73,3 +75,29 @@ class stats():
 
         return avAge
 
+
+    def optimum_age():
+        # the use of decision tree regressor to estimate slaughter_age
+
+        # Our target variable
+        y = df_slaughtered.slaughter_age
+
+        # Our features
+        features = ['slaughter_weight']
+        X = df_slaughtered[features]
+
+        train_X, val_X, train_y, val_y = train_test_split(
+            X, y, random_state=1)
+
+        # calling model
+        age_model = DecisionTreeRegressor(random_state=1)
+
+        # fitting data into model
+        age_model.fit(X, y)
+
+        # prediction
+        age_prediction = age_model.predict(val_X)
+
+        return age_prediction
+
+# print(stats.optimum_age())
