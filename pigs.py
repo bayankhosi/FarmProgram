@@ -14,9 +14,9 @@ spread = opx.load_workbook('./Files/spread.xlsx')
 individual = spread.worksheets[0]                               # opens current year sheet
 whole = spread.worksheets[year - 2020]
 population = int(whole.cell(column=2, row=month + 1).value)     # total number of pigs
-pig_id = individual['H1'].value
+pig_id = individual['J1'].value
 
-def buy_age(population, pig_id):                                 # recording entering piglets
+def buy_age(population, pig_id):                                 # recording new piglets
 
     population += 1     # add to number of pigs
     whole.cell(column=2, row=month + 1).value = population
@@ -24,19 +24,27 @@ def buy_age(population, pig_id):                                 # recording ent
     whole.cell(column=2, row=month + 2).value = population
 
     pig_id += 1
-    individual['H1'].value = pig_id
+    individual['J1'].value = pig_id
     rw = pig_id + 1
     individual.cell(row=rw, column=1).value = pig_id
     print("\nThe pig's ID is: ", pig_id)
 
     purchase_date = today         # code to record date
-
     age_bought = int(input("\nEnter Age of piglet (weeks): "))
     date_born = purchase_date - datetime.timedelta(days=7 * age_bought)
     individual.cell(row=rw, column=2).value = date_born
 
     purchase_price = int(input("\nEnter purchase price: "))
     individual.cell(row=rw, column=3).value = purchase_price
+
+    breed = str(input("""
+        Choose Breed:
+            n = Ncane
+            m = Mngometulu
+            t = Motjane
+        """))
+    individual.cell(row=rw, column=8).value = breed
+    
 
     # print("Population: ", population)  # , '\n', "Piglet born: ",date_born)
 
@@ -50,7 +58,7 @@ def consumables():                                               # resources spe
             feed each month """
 
     consumable_choice = int(
-        input("\nWhich Consumable are you recording?\n1.Feed   2.Miscelleneous: "))
+        input("\nWhich Consumable are you recording?\n1.Feed\n2.Miscelleneous\n3.Medicine\n"))
 
     if consumable_choice == 1:
         print("\nEnter mass of feed bought (Kg)")
@@ -73,7 +81,12 @@ def consumables():                                               # resources spe
         misc_price = int(input()) + whole.cell(column=5, row=month+1).value
         whole.cell(column=5, row=month+1).value = misc_price
 
-    return
+    elif consumable_choice == 3:
+        pig_id = int(input("Enter ID of pig medicating: "))
+        rw = pig_id + 1
+        med = float(input("Enter amount of medication (ml): "))
+
+        individual.cell(row=rw, column=9).value = med
 
 
 def sale(population):                                            # info on slaughter and sale

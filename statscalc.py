@@ -15,10 +15,11 @@ spread = opx.load_workbook('./Files/spread.xlsx')
 individual = spread.worksheets[0]
 whole = spread.worksheets[1]
 population = int(whole.cell(column=2, row=month + 1).value)     # total number of pigs
-pig_id = individual['H1'].value
+pig_id = individual['J1'].value
 
 df = pd.read_excel('./Files/spread.xlsx', 
-                   sheet_name= 'individual')
+                   sheet_name= 'individual',
+                   index_col=0)
 df_month = pd.read_excel('./Files/spread.xlsx', 
                          sheet_name= '2021')
 df_alive = df.loc[df.slaughter_date.isnull()].filter(
