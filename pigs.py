@@ -165,12 +165,6 @@ def monitor():                                                   # view collecte
         FeedPerPig = whole.cell(column=7, row=month + 1).value
         FeedPerPigAge = whole.cell(column=7, row=month + 1).value
         FeedPrice = whole.cell(column=4, row=month + 1).value
-        
-        if whole.cell(column=6, row=month +1).value == None:
-            avAge = statscalc.stats.average_age(month)
-            whole.cell(column=6, row=month +1).value = avAge
-        else:
-            avAge = whole.cell(column=6, row=month +1).value
 
         print("\nData for", whole.cell(column=1, row=month + 1).value)
 

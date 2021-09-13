@@ -1,11 +1,12 @@
 import time
+import statscalc
 import datetime
 import openpyxl as opx
 from plyer import notification
 
 spread = opx.load_workbook('./Files/spread.xlsx')
 individual = spread.worksheets[0]
-pig_id = individual['L1'].value
+pig_id = individual['J1'].value
 
 optimal_Age = 120        # optimal age to slaughter. Shld be calculated in statscalc
 
@@ -71,6 +72,7 @@ class check():
                     days_left = "OVERDUE by " + str(today - best_day)
 
 
+
 a = 1
 
 while a == 1:
@@ -79,6 +81,11 @@ while a == 1:
         notify.daily()
         check.age()
 
-    time.sleep(30*60)
+    if datetime.date.today().day == 30:
+        statscalc.stats.average_age()
+        print('avAge')
+
+    time.sleep(30*60)                # pauses for 30 minutes
+
 
 # daily noty

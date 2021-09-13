@@ -3,29 +3,41 @@ from calendar import monthrange
 import openpyxl as opx
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split
 
+# Dates
 
-today = datetime.datetime.now()                          # date
-month = int(datetime.datetime.now().strftime("%m"))             # month number
-year = int(datetime.datetime.now().strftime("%Y"))              # Year
+today = datetime.date.today()
+today_dt = datetime.datetime.fromordinal(today.toordinal())
+month = today.month
+year = int(today.year)
+
+# Openpyxl
 
 spread = opx.load_workbook('./Files/spread.xlsx')
 individual = spread.worksheets[0]
 whole = spread.worksheets[1]
-population = int(whole.cell(column=2, row=month + 1).value)     # total number of pigs
+
+population = int(whole.cell(column=2, row=month + 1).value)
 pig_id = individual['J1'].value
 
-df = pd.read_excel('./Files/spread.xlsx', 
-                   sheet_name= 'individual',
-                   index_col=0)
-df_month = pd.read_excel('./Files/spread.xlsx', 
-                         sheet_name= '2021')
-df_alive = df.loc[df.slaughter_date.isnull()].filter(
-    ['ID', 'birth_date', 'purchase_price'])
-df_slaughtered = df.loc[df.slaughter_date.isnull()==False]
+# DataFrames
 
+df = pd.read_excel('./Files/spread.xlsx',                       # all pigs
+                   sheet_name='individual',
+                   index_col=0)
+
+df_month = pd.read_excel('./Files/spread.xlsx',                 # monthly data
+                         sheet_name='2021')
+
+df_alive = df.loc[df.slaughter_date.isnull()].filter(           # unslaughtered pigs
+    ['ID', 'birth_date', 'purchase_price'])
+df_alive['age'] = today_dt - pd.to_datetime(df.birth_date)
+
+# slaughtered pigs
+df_slaughtered = df.loc[df.slaughter_date.isnull() == False]
 
 
 class stats():
@@ -33,49 +45,28 @@ class stats():
 
     def mass_age():              # slaughter mass - age graph
 
-        """ df_slaughtered.plot(kind= 'scatter',
-        x= 'slaughter_age',
-        y= 'slaughter_weight')
-        plt.show() """
-        plt.scatter(x=df_slaughtered.slaughter_age,
-                    y=df_slaughtered.slaughter_weight,
-                    )
-        plt.gca().update(dict(title= "Mass-Age Graph",
-                        xlabel= "Slaughter Age (days)",
-                        ylabel= "Slaughter Mass (Kg)"))
+        sns.regplot(x=df_slaughtered.slaughter_age,
+                    y=df_slaughtered.slaughter_weight
+                    ).set_title('Mass - Age')
         plt.show()
 
+    def average_age():      # should be done ev half of month
 
-    def average_age(month):      # should be done ev half of month
+        month = today.month
 
-        """df_alive['age'] = today - pd.to_datetime(df.birth_date)
+        day = monthrange(2021, today.month)[1]//2
 
-        avAge = df_alive.age.mean()"""
+        mid_month = today - datetime.timedelta(days=today.day + day)
 
-        mnth = str(monthrange(2021, month)[1]//2)
-        monthEnd = "2021/0" + str(month) + "/" + mnth
-        monthEnd = datetime.datetime.strptime(monthEnd, '%Y/%m/%d')
-        monthEnd = datetime.datetime.date(monthEnd)
+        df_alive['mid_month_age'] = (datetime.datetime.fromordinal(
+            mid_month.toordinal()) - pd.to_datetime(df.birth_date))
 
-        ro = 0
-        totAge = 0
+        df_alive['mid_month_age'] = (df_alive['mid_month_age']).dt.days
 
-        for row in individual.iter_rows(min_row=0, max_row=pig_id + 1):
-            y = row[5].value
-            ro += 1
+        avAge = int(df_alive.mid_month_age.mean())
 
-            if y == None:
-                date_born = datetime.datetime.date(
-                    individual.cell(row=ro, column=2).value)
-                currAge = (monthEnd-date_born).days
-                totAge += currAge
-
-        avAge = totAge/population
-        whole.cell(row=6, column=month + 1).value = avAge
-
-
-        return avAge
-
+        whole.cell(column=6, row=month + 1).value = avAge
+        spread.save('./Files/spread.xlsx')
 
     def optimum_age():
         # the use of decision tree regressor to estimate slaughter_age
@@ -101,4 +92,9 @@ class stats():
 
         return age_prediction
 
+
 # print(stats.optimum_age())
+
+# print(stats.average_age())
+
+# stats.mass_age()
