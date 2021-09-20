@@ -21,7 +21,7 @@ individual = spread.worksheets[0]
 whole = spread.worksheets[1]
 
 population = int(whole.cell(column=2, row=month + 1).value)
-pig_id = individual['J1'].value
+pig_id = individual['L1'].value
 
 # DataFrames
 

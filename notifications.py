@@ -6,7 +6,7 @@ from plyer import notification
 
 spread = opx.load_workbook('./Files/spread.xlsx')
 individual = spread.worksheets[0]
-pig_id = individual['J1'].value
+pig_id = individual['L1'].value
 
 optimal_Age = 120        # optimal age to slaughter. Shld be calculated in statscalc
 

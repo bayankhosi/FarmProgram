@@ -1,6 +1,7 @@
 from calendar import monthrange
 import datetime
 import openpyxl as opx
+import pandas as pd
 import upload
 import statscalc
 
@@ -11,10 +12,13 @@ month = datetime.datetime.now().month                           # month number
 year = datetime.datetime.now().year                             # year
 
 spread = opx.load_workbook('./Files/spread.xlsx')
-individual = spread.worksheets[0]                               # opens current year sheet
+# opens current year sheet
+individual = spread.worksheets[0]
 whole = spread.worksheets[year - 2020]
-population = int(whole.cell(column=2, row=month + 1).value)     # total number of pigs
-pig_id = individual['J1'].value
+# total number of pigs
+population = int(whole.cell(column=2, row=month + 1).value)
+pig_id = individual['L1'].value
+
 
 def buy_age(population, pig_id):                                 # recording new piglets
 
@@ -24,14 +28,15 @@ def buy_age(population, pig_id):                                 # recording new
     whole.cell(column=2, row=month + 2).value = population
 
     pig_id += 1
-    individual['J1'].value = pig_id
+    individual['L1'].value = pig_id
     rw = pig_id + 1
     individual.cell(row=rw, column=1).value = pig_id
     print("\nThe pig's ID is: ", pig_id)
 
-    purchase_date = today         # code to record date
     age_bought = int(input("\nEnter Age of piglet (weeks): "))
+    purchase_date = today         # code to record date
     date_born = purchase_date - datetime.timedelta(days=7 * age_bought)
+    individual.cell(row=rw, column=11).value = purchase_date
     individual.cell(row=rw, column=2).value = date_born
 
     purchase_price = int(input("\nEnter purchase price: "))
@@ -44,11 +49,6 @@ def buy_age(population, pig_id):                                 # recording new
             t = Motjane
         """))
     individual.cell(row=rw, column=8).value = breed
-    
-
-    # print("Population: ", population)  # , '\n', "Piglet born: ",date_born)
-
-    return
 
 
 def consumables():                                               # resources spent on well being
@@ -72,9 +72,7 @@ def consumables():                                               # resources spe
 
         FeedPerPig = whole.cell(column=3, row=month + 1).value / \
             whole.cell(column=2, row=month + 1).value
-        whole.cell(column=7, row=month + 1).value = FeedPerPig
-
-        # av feed per pig per pig weight
+        whole.cell(column=5, row=month + 1).value = FeedPerPig
 
     elif consumable_choice == 2:
         print("\nEnter price of item (E)")
@@ -96,29 +94,57 @@ def sale(population):                                            # info on slaug
     pig_id = int(input("\nEnter ID of Pig Slaughtered: "))
     rw = pig_id + 1
 
+    # check if there is non recorded slaughter for pig_id
+
     if individual.cell(row=rw, column=4).value == None:
-        population -= 1     # subtract from number of pigs
+
+        # subtract from number of pigs
+        population -= 1
         whole.cell(column=2, row=month + 1).value = population
         # to ensure nxt mnt pop not 0
         whole.cell(column=2, row=month + 2).value = population
+        print("\nNew Population: ", population)
 
+        # record date of slaughter
         slaughter_date = today
         individual.cell(row=rw, column=4).value = slaughter_date
-        slaughter_weight = float(input("\nEnter Slaughter Weight of pig: "))
 
+        # record slaughter age
         date_born = datetime.datetime.date(
             individual.cell(row=pig_id + 1, column=2).value)
         slaughter_age = int((today - date_born).days)
         print("\nEnter Slaughter Age of pig: ", slaughter_age, "days")
         individual.cell(row=rw, column=6).value = int(slaughter_age)
 
+        # record slauhgter mass
+        slaughter_weight = float(input("\nEnter Slaughter Weight of pig: "))
         individual.cell(row=rw, column=5).value = slaughter_weight
         price_Kg = float(input("\nPrice per Kg: "))
         sale_price = slaughter_weight * price_Kg
         individual.cell(row=rw, column=7).value = sale_price
 
-        print("\nNew Population: ", population)
-    
+        # estimate of total food mass eaten
+        purchase_date = individual.cell(row=rw, column=11).value
+        month_bought = purchase_date.month - 1
+        month_slaughtered = today.month
+
+        # don't count month feed if bought after mid-month
+        if purchase_date.day > 15:
+            month_bought += 1
+
+        # don't count month feed if slaughtered before mid-month
+        if today.day < 15:
+            month_slaughtered -= 1
+
+        df_month = pd.read_excel('./Files/spread.xlsx',
+                                 sheet_name='2021',
+                                 index_col=0)
+        df_month['feed_per_pig'] = df_month.feed_mass / df_month.population
+
+        feed_eaten = df_month[month_bought: month_slaughtered]['feed_per_pig'].sum(
+        )
+        individual.cell(row=rw, column=10).value = feed_eaten
+
     else:
         print("\nThis ID is for a pig that has already been slaughtered.\nTry again.")
 
@@ -210,7 +236,7 @@ while loop == 2:
         consumables()
 
     elif action == 3:
-        
+
         sale(population)
 
     elif action == 4:
