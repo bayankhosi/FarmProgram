@@ -17,7 +17,7 @@ individual = spread.worksheets[0]
 whole = spread.worksheets[year - 2020]
 # total number of pigs
 population = int(whole.cell(column=2, row=month + 1).value)
-pig_id = individual['L1'].value
+pig_id = individual['M1'].value
 
 
 def buy_age(population, pig_id):                                 # recording new piglets
@@ -28,11 +28,13 @@ def buy_age(population, pig_id):                                 # recording new
     whole.cell(column=2, row=month + 2).value = population
 
     pig_id += 1
-    individual['L1'].value = pig_id
+    individual['M1'].value = pig_id
     rw = pig_id + 1
     individual.cell(row=rw, column=1).value = pig_id
     print("\nThe pig's ID is: ", pig_id)
 
+    sex = int(input("\nEnter sex of piglet \nMale(1)\nFemale(0): "))
+    individual.cell(row=rw, column=12).value = sex
     age_bought = int(input("\nEnter Age of piglet (weeks): "))
     purchase_date = today         # code to record date
     date_born = purchase_date - datetime.timedelta(days=7 * age_bought)
@@ -183,13 +185,20 @@ def monitor():                                                   # view collecte
                 row=pig_id + 1, column=5).value, "Kg")
             print("\nSale Price:  E", individual.cell(
                 row=pig_id + 1, column=7).value)
+            print("\nFeed Eaten: ", individual.cell(
+                row=pig_id + 1, column=10).value)
 
     elif View == 2:     # month data
         month = int(input("\nEnter month number you want to view: "))
+
+        avAge = whole.cell(column=6, row=month + 1).value
+
         Population = whole.cell(column=2, row=month + 1).value
+
         FeedMass = whole.cell(column=3, row=month + 1).value
-        FeedPerPig = whole.cell(column=7, row=month + 1).value
-        FeedPerPigAge = whole.cell(column=7, row=month + 1).value
+
+        FeedPerPig = whole.cell(column=3, row=month + 1).value / population
+
         FeedPrice = whole.cell(column=4, row=month + 1).value
 
         print("\nData for", whole.cell(column=1, row=month + 1).value)
@@ -203,10 +212,7 @@ def monitor():                                                   # view collecte
         print("\nAverage feed per pig: ", FeedPerPig, "Kg/pig")
 
         print("\nPrice of feed:  E", FeedPrice)
-
-        print("\nTotal spent:  E", whole.cell(column=4, row=month +
-              1).value + whole.cell(column=5, row=month + 1).value)
-
+        
     elif View == 3:     # statistics
         graph = int(input(("""
             Choose a graph
