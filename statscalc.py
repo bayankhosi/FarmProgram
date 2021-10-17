@@ -4,8 +4,8 @@ import openpyxl as opx
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from xgboost import XGBRegressor
-from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.preprocessing import LabelEncoder
 
 # Dates
 
@@ -32,16 +32,14 @@ df = pd.read_excel('./Files/spread.xlsx',                       # all pigs
 df_month = pd.read_excel('./Files/spread.xlsx',                 # monthly data
                          sheet_name='2021')
 
-df_alive = df.loc[df.slaughter_date.isnull()].filter(           # unslaughtered pigs
-    ['ID', 'birth_date', 'purchase_price'])
+df_alive = df.loc[df.slaughter_date.isnull()].filter(           # living pigs
+    ['ID', 'slaughter_weight', 'breed', 'meds', 'sex'])
 df_alive['age'] = today_dt - pd.to_datetime(df.birth_date)
 
-# slaughtered pigs
-df_slaughtered = df.loc[df.slaughter_date.isnull() == False]
+df_slaughtered = df.loc[df.slaughter_date.isnull() == False]    # slaughtered pigs
 
 
 class stats():
-    # find how much food does a pig eat in its lifetime
 
     def mass_age():              # slaughter mass - age graph
 
@@ -68,33 +66,37 @@ class stats():
         whole.cell(column=6, row=month + 1).value = avAge
         spread.save('./Files/spread.xlsx')
 
-    def optimum_age():
+    def optimum_age(id):
         # the use of decision tree regressor to estimate slaughter_age
+
+        # dealing with categorical data
+        cat_cols = ['breed']
+        enc = LabelEncoder()
+        df_slaughtered.loc[:,cat_cols] = df_slaughtered.loc[:,cat_cols].apply(enc.fit_transform)
+        df_alive.loc[:,cat_cols] = df_alive.loc[:,cat_cols].apply(enc.fit_transform)
 
         # Our target variable
         y = df_slaughtered.slaughter_age
 
         # Our features
-        features = ['slaughter_weight', 'meds']
+        features = ['slaughter_weight', 'meds', 'breed', 'sex']
         X = df_slaughtered[features]
 
-        train_X, val_X, train_y, val_y = train_test_split(
-            X, y, random_state=1)
-
         # calling model
-        age_model = XGBRegressor(random_state=1)
+        age_model = DecisionTreeRegressor(random_state=1)
 
         # fitting data into model
         age_model.fit(X, y)
 
-        # prediction
-        age_prediction = age_model.predict(val_X)
+        df_alive['slaughter_weight'] = 55   # we aim to slaghter at 55Kg
 
+        age_prediction = age_model.predict(df_alive[features].iloc[df_alive.index==id]).round(0)
         return age_prediction
 
 
-# print(stats.optimum_age())
+#stats.optimum_age(id=9)
 
+# print(df_alive)
 # print(stats.average_age())
 
 # stats.mass_age()
