@@ -33,15 +33,16 @@ df_month = pd.read_excel('./Files/spread.xlsx',                 # monthly data
                          sheet_name='2021')
 
 df_alive = df.loc[df.slaughter_date.isnull()].filter(           # living pigs
-    ['ID', 'slaughter_weight', 'breed', 'meds', 'sex'])
+    ['ID', 'slaughter_weight', 'breed', 'meds', 'sex', 'feed_eaten'])
 df_alive['age'] = today_dt - pd.to_datetime(df.birth_date)
 
-df_slaughtered = df.loc[df.slaughter_date.isnull() == False]    # slaughtered pigs
+# slaughtered pigs
+df_slaughtered = df.loc[df.slaughter_date.isnull() == False]
 
 
 class stats():
 
-    def mass_age():              # slaughter mass - age graph
+    def mass_age():         # slaughter mass - age graph
 
         sns.regplot(x=df_slaughtered.slaughter_age,
                     y=df_slaughtered.slaughter_weight
@@ -64,7 +65,24 @@ class stats():
         avAge = int(df_alive.mid_month_age.mean())
 
         whole.cell(column=6, row=month + 1).value = avAge
+        # spread.save('./Files/spread.xlsx')
+
+        return avAge
+
+    def feed_per_pig():
+
+        feed_p_pig = stats.average_age() / population
+        whole.cell(column=5, row=month + 1).value = feed_p_pig
         spread.save('./Files/spread.xlsx')
+
+        for id, row in df_alive.iterrows():
+            cur_feed = individual.cell(row=id+1, column=10).value
+            individual.cell(row=id+1, column=10).value = feed_p_pig + cur_feed
+            spread.save('./Files/spread.xlsx')
+
+        return feed_p_pig
+
+        print(feed_p_pig)
 
     def optimum_age(id):
         # the use of decision tree regressor to estimate slaughter_age
@@ -72,14 +90,16 @@ class stats():
         # dealing with categorical data
         cat_cols = ['breed']
         enc = LabelEncoder()
-        df_slaughtered.loc[:,cat_cols] = df_slaughtered.loc[:,cat_cols].apply(enc.fit_transform)
-        df_alive.loc[:,cat_cols] = df_alive.loc[:,cat_cols].apply(enc.fit_transform)
+        df_slaughtered.loc[:, cat_cols] = df_slaughtered.loc[:,
+                                                             cat_cols].apply(enc.fit_transform)
+        df_alive.loc[:, cat_cols] = df_alive.loc[:,
+                                                 cat_cols].apply(enc.fit_transform)
 
         # Our target variable
         y = df_slaughtered.slaughter_age
 
         # Our features
-        features = ['slaughter_weight', 'meds', 'breed', 'sex']
+        features = ['slaughter_weight', 'meds', 'breed', 'sex', 'feed_eaten']
         X = df_slaughtered[features]
 
         # calling model
@@ -90,13 +110,14 @@ class stats():
 
         df_alive['slaughter_weight'] = 55   # we aim to slaghter at 55Kg
 
-        age_prediction = age_model.predict(df_alive[features].iloc[df_alive.index==id]).round(0)
+        age_prediction = age_model.predict(
+            df_alive[features].iloc[df_alive.index == id]).round(0)
         return age_prediction
 
 
-#stats.optimum_age(id=9)
+# print(stats.optimum_age(id=9))
 
 # print(df_alive)
 # print(stats.average_age())
 
-# stats.mass_age()
+# stats.feed_per_pig()

@@ -73,12 +73,11 @@ class check():
                 pig_ID = id
                 notify.slaughter(pig_ID, days_left)
 
-
             else:
                 days_left = "OVERDUE by " + str(today - datetime.timedelta(days=age_prediction))
 
 
-check.age()
+
 
 
 while (1 == 1):
@@ -87,8 +86,10 @@ while (1 == 1):
         notify.daily()
         check.age()
 
-    if datetime.date.today().day == 30:
+    if datetime.date.today().day == 30: # calculate the months average age
         statscalc.stats.average_age()
-        print('avAge')
+        statscalc.stats.feed_per_pig()
 
+
+    
     time.sleep(30*60)                # pauses for 30 minutes

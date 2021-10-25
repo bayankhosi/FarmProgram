@@ -5,16 +5,17 @@ import pandas as pd
 import upload
 import statscalc
 
-loop = 2
 date_format = '%d/%m/%Y'
 today = datetime.datetime.now().date()
 month = datetime.datetime.now().month                           # month number
 year = datetime.datetime.now().year                             # year
 
 spread = opx.load_workbook('./Files/spread.xlsx')
+
 # opens current year sheet
 individual = spread.worksheets[0]
 whole = spread.worksheets[year - 2020]
+
 # total number of pigs
 population = int(whole.cell(column=2, row=month + 1).value)
 pig_id = individual['M1'].value
@@ -51,6 +52,8 @@ def buy_age(population, pig_id):                                 # recording new
             t = Motjane
         """))
     individual.cell(row=rw, column=8).value = breed
+
+    individual.cell(row=rw, column=10).value = 0
 
 
 def consumables():                                               # resources spent on well being
@@ -224,7 +227,7 @@ def monitor():                                                   # view collecte
         """ if graph == 2:
             statscalc.stats.feed_age() """
 
-
+loop = 2
 while loop == 2:
     action = int(input("""************************************************************************
             These are the operations that can be performed\n
