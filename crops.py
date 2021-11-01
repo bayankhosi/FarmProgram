@@ -40,7 +40,7 @@ def harvest():
             print('kak')
 
 
-harvest()
+# harvest()
 #print(crops.cell(row=2, column=9).value)
-# planting()
-# Crops.save('./Files/crops.xlsx')
+planting()
+Crops.save('./Files/crops.xlsx')
