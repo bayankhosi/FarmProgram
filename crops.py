@@ -16,6 +16,7 @@ Crops = opx.load_workbook('./Files/crops.xlsx')
 crops = Crops.worksheets[0]
 #fields = Crops.worksheets[year - 2020]
 
+
 class veggie():
 
     def planting():
@@ -31,7 +32,6 @@ class veggie():
 
         age = int(input("Enter seedling age in weeks:\n\t"))
         crops.cell(row=2, column=4).value = 7*age
-
 
     def harvest():
 
@@ -49,7 +49,7 @@ class field():
 
         if type == 1:
             print('Fert')
-            
+
         elif type == 2:
             print('Till')
 
@@ -57,5 +57,5 @@ class field():
 # harvest()
 #print(crops.cell(row=2, column=9).value)
 field.work()
-#veggie.planting()
+# veggie.planting()
 Crops.save('./Files/crops.xlsx')
