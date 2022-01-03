@@ -14,48 +14,58 @@ Crops = opx.load_workbook('./Files/crops.xlsx')
 
 # opens current year sheet
 crops = Crops.worksheets[0]
-#fields = Crops.worksheets[year - 2020]
+fields = Crops.worksheets[1]
 
 
 class veggie():
 
     def planting():
 
+        row = 1 + crops.max_row
+
         crop = str(input("Enter name of crop (small letters):\n\t"))
-        crops.cell(row=2, column=1).value = crop
+        crops.cell(row=row, column=1).value = crop
 
         field = str(input("Enter field number:\n\t"))
-        crops.cell(row=2, column=2).value = field
+        crops.cell(row=row, column=2).value = field
 
         # date
-        crops.cell(row=2, column=3).value = today.strftime(fmt)
+        crops.cell(row=row, column=3).value = today.strftime(fmt)
 
         age = int(input("Enter seedling age in weeks:\n\t"))
-        crops.cell(row=2, column=4).value = 7*age
+        crops.cell(row=row, column=4).value = 7*age
 
     def harvest():
 
         field = int(input("Enter field number harvested:\n\t"))
-        for i in crops.rows:
-            if (crops.cell(row=2, column=2).value == field) and (crops.cell(row=2, column=9).value == None):
+        for i in crops.iter_rows:
+            if (crops.cell(row=i, column=2).value == field) and (crops.cell(row=i, column=9).value == None):
                 print('kak')
 
 
 class field():
 
     def work():
-        type = int(input("""            1. Fertilization
-            2. Tillage\n"""))
 
-        if type == 1:
-            print('Fert')
+        row = 1 + fields.max_row
 
-        elif type == 2:
-            print('Till')
+        field = str(input("Enter field number:\n\t"))
+        fields.cell(row=row, column=1).value = field
+
+        fields.cell(row=row, column=2).value = today
+
+        fertilizer = str(input("Enter fertilizer type ('0' if none):\n\t"))
+        fields.cell(row=row, column=3).value = fertilizer
+
+        till = str(input("Enter tillage type\n0. none\n1. Shallow\n2. Deep\n\t"))
+        fields.cell(row=row, column=4).value = till
+
+        mulch = str(input("0. No Mulch\n1. Mulch\n\t"))
+        fields.cell(row=row, column=5).value = mulch
 
 
 # harvest()
-#print(crops.cell(row=2, column=9).value)
+# print(crops.cell(row=2, column=9).value)
 field.work()
-# veggie.planting()
+#veggie.planting()
 Crops.save('./Files/crops.xlsx')

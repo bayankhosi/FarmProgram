@@ -15,7 +15,6 @@ spread = opx.load_workbook('./Files/spread.xlsx')
 # opens current year sheet
 individual = spread.worksheets[0]
 whole = spread.worksheets[year - 2020]
-
 # total number of pigs
 population = int(whole.cell(column=2, row=month + 1).value)
 pig_id = individual['M1'].value
@@ -34,7 +33,7 @@ def buy_age(population, pig_id):                                 # recording new
     individual.cell(row=rw, column=1).value = pig_id
     print("\nThe pig's ID is: ", pig_id)
 
-    sex = int(input("\nEnter sex of piglet \nMale(1)\nFemale(0): "))
+    sex = int(input("\nEnter sex of piglet \nMale(1), Female(0): \n"))
     individual.cell(row=rw, column=12).value = sex
     age_bought = int(input("\nEnter Age of piglet (weeks): "))
     purchase_date = today         # code to record date
