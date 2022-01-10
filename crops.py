@@ -64,8 +64,25 @@ class field():
         fields.cell(row=row, column=5).value = mulch
 
 
-# harvest()
-# print(crops.cell(row=2, column=9).value)
-field.work()
-#veggie.planting()
-Crops.save('./Files/crops.xlsx')
+def main():
+
+    choice = int(input('''
+        [1] Crop Update
+        [2] Field Update'''))
+
+    if choice == 1:
+        choice = int(input('''
+            [1] Planting
+            [2] Harvesting'''))
+        if choice == 1:
+            veggie.planting()
+        if choice == 2:
+            veggie.harvest()
+
+    if choice == 2:
+        field.work()
+
+    Crops.save('./Files/crops.xlsx')
+
+if __name__ == '__main__':
+    main()
