@@ -37,10 +37,23 @@ class veggie():
 
     def harvest():
 
-        field = int(input("Enter field number harvested:\n\t"))
-        for i in crops.iter_rows:
-            if (crops.cell(row=i, column=2).value == field) and (crops.cell(row=i, column=9).value == None):
-                print('kak')
+        field = str(input("Enter field harvested: "))
+
+        # find crops in entered field
+        for i in crops.iter_rows(2):
+            for cell in i:
+                if cell.value == field:
+                    print('[%d] - %s' % (cell.row,
+                          crops.cell(row=cell.row, column=1).value))
+
+        harvested = int(input('Select plant harvested: '))
+
+        # record date of harvest
+        crops.cell(row=harvested, column=8).value = today
+
+        # record mass of yield
+        mass = int(input('Enter mass of harvest: '))
+        crops.cell(row=harvested, column=9).value = mass
 
 
 class field():
@@ -83,6 +96,7 @@ def main():
         field.work()
 
     Crops.save('./Files/crops.xlsx')
+
 
 if __name__ == '__main__':
     main()
