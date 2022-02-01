@@ -21,6 +21,7 @@ pig_id = individual['M1'].value
 
 
 def buy_age(population, pig_id):                                 # recording new piglets
+    print("=========================================\n\t\tPIGLET\n")
 
     population += 1     # add to number of pigs
     whole.cell(column=2, row=month + 1).value = population
@@ -33,7 +34,7 @@ def buy_age(population, pig_id):                                 # recording new
     individual.cell(row=rw, column=1).value = pig_id
     print("\nThe pig's ID is: ", pig_id)
 
-    sex = int(input("\nEnter sex of piglet \nMale(1), Female(0): \n"))
+    sex = int(input("[1] - Male\n[0] - Female\n"))
     individual.cell(row=rw, column=12).value = sex
     age_bought = int(input("\nEnter Age of piglet (weeks): "))
     purchase_date = today         # code to record date
@@ -41,37 +42,30 @@ def buy_age(population, pig_id):                                 # recording new
     individual.cell(row=rw, column=11).value = purchase_date
     individual.cell(row=rw, column=2).value = date_born
 
-    purchase_price = int(input("\nEnter purchase price: "))
+    purchase_price = int(input("\nEnter purchase price: E"))
     individual.cell(row=rw, column=3).value = purchase_price
 
-    breed = str(input("""
-        Choose Breed:
-            n = Ncane
-            m = Mngometulu
-            t = Motjane
-        """))
+    breed = str(input("\nEnter breed name (small letters): "))
     individual.cell(row=rw, column=8).value = breed
 
-    individual.cell(row=rw, column=10).value = 0
+    individual.cell(row=rw, column=10).value = 0  # no feed eaten
+    individual.cell(row=rw, column=9).value = 0  # no meds taken
 
 
 def consumables():                                               # resources spent on well being
-    """ Record:
-            population each month
-            average age each month
-            feed each month """
-
+    print("=========================================\n\t\tCONSUMABLES\n")
     consumable_choice = int(
-        input("\nWhich Consumable are you recording?\n1.Feed\n2.Miscelleneous\n3.Medicine\n"))
+        input("\t[1] - Feed\n\t[2] - Medicated a pig\n\t[3] - Miscelleneous\n\t"))
 
     if consumable_choice == 1:
-        print("\nEnter mass of feed bought (Kg)")
-        feed_weight = int(input()) + whole.cell(column=3, row=month+1).value
+        print("\n\tEnter mass of feed bought (Kg)")
+        feed_weight = int(input("\t")) + \
+            whole.cell(column=3, row=month+1).value
         # record the amount
         whole.cell(column=3, row=month+1).value = feed_weight
 
-        print("\nEnter price of feed bought (E)")
-        feed_price = int(input()) + whole.cell(column=4, row=month+1).value
+        print("\n\tEnter price of feed bought (E)")
+        feed_price = int(input("\t")) + whole.cell(column=4, row=month+1).value
         whole.cell(column=4, row=month+1).value = feed_price
 
         FeedPerPig = whole.cell(column=3, row=month + 1).value / \
@@ -79,28 +73,30 @@ def consumables():                                               # resources spe
         whole.cell(column=5, row=month + 1).value = FeedPerPig
 
     elif consumable_choice == 2:
+        pig_id = int(input("Enter ID of pig medicated: "))
+        rw = pig_id + 1
+        med = float(input("Enter amount of medication (ml): "))
+
+        individual.cell(row=rw, column=9).value += med
+
+    elif consumable_choice == 3:
         print("\nEnter price of item (E)")
         misc_price = int(input()) + whole.cell(column=5, row=month+1).value
         whole.cell(column=5, row=month+1).value = misc_price
 
-    elif consumable_choice == 3:
-        pig_id = int(input("Enter ID of pig medicating: "))
-        rw = pig_id + 1
-        med = float(input("Enter amount of medication (ml): "))
-
-        individual.cell(row=rw, column=9).value = med
-
 
 def sale(population):                                            # info on slaughter and sale
-    # make averages for that individual pig available
-    # profit on the pig by subtracting average spend on it
+    print("=========================================\n\t\tSLAUGHTER\n")
 
     pig_id = int(input("\nEnter ID of Pig Slaughtered: "))
     rw = pig_id + 1
 
     # check if there is non recorded slaughter for pig_id
-
     if individual.cell(row=rw, column=4).value == None:
+
+        if individual.cell(row=rw, column=1).value == None:
+            print("\nSpecified ID doesn't exist\n")
+            sale(population)
 
         # subtract from number of pigs
         population -= 1
@@ -151,16 +147,18 @@ def sale(population):                                            # info on slaug
 
     else:
         print("\nThis ID is for a pig that has already been slaughtered.\nTry again.")
+        sale(population)
 
 
 def monitor():                                                   # view collected data
+    print("=========================================\n\t\tMONITERING\n")
 
     View = int(
         input("""
             View data for: 
-                1. Individual Pig   
-                2. Whole Month Data
-                3. Statistics 
+                [1] - Individual Pig   
+                [2] - Whole Month Data
+                [3] - Statistics 
         """))
 
     if View == 1:       # individual pig data
@@ -214,27 +212,32 @@ def monitor():                                                   # view collecte
         print("\nAverage feed per pig: ", FeedPerPig, "Kg/pig")
 
         print("\nPrice of feed:  E", FeedPrice)
-        
+
     elif View == 3:     # statistics
         graph = int(input(("""
             Choose a graph
-                1. Mass-Age
+                [1] - Mass - Age
+                [2] - Month - Feed Mass
+                [3] - Population - Feed Mass
         """)))
         if graph == 1:
             statscalc.stats.mass_age()
 
-        """ if graph == 2:
-            statscalc.stats.feed_age() """
+        if graph == 2:
+            statscalc.stats.month_feed()
+
+        if graph == 3:
+            statscalc.stats.age_feed()
+
 
 loop = 2
 while loop == 2:
-    action = int(input("""************************************************************************
-            These are the operations that can be performed\n
-            [1] - Record New Piglet
-            [2] - Record Bought Consumable(s)
-            [3] - Record Slaughter and Sale
-            [4] - View Data
-        """))
+    action = int(input("""
+    =========================================
+        [1] - Record New Piglet
+        [2] - Record Consumable(s)
+        [3] - Record Slaughter and Sale
+        [4] - View Data\n"""))
 
     if action == 1:
 
@@ -250,15 +253,9 @@ while loop == 2:
     elif action == 4:
         monitor()
 
-    elif action == 5:
-        try:
-            upload.main()
-        except:
-            print("Couldn't upload")
-
     spread.save('./Files/spread.xlsx')
-    loop = int(input("\n1. Exit, 2. For Other Operation: ",))
-    print("************************************************************************")
+    loop = int(input("\n[1] - Exit\n[2] - For Other Operation\n",))
+    print("=========================================")
 
 
 try:

@@ -49,6 +49,19 @@ class stats():
                     ).set_title('Mass - Age')
         plt.show()
 
+    def month_feed():
+
+        sns.barplot(x=df_month.month,
+                    y=df_month.feed_mass
+                    ).set_title('Month - Feed Mass')
+        plt.show()
+
+    def age_feed():
+        sns.barplot(x=df_month.population,
+                    y=df_month.feed_mass
+                    ).set_title('Average Age - Feed Mass')
+        plt.show()
+
     def average_age():      # should be done ev half of month
 
         month = today.month
@@ -121,3 +134,4 @@ class stats():
 # print(stats.average_age())
 
 # stats.feed_per_pig()
+# stats.age_feed()
