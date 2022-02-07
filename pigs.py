@@ -1,5 +1,6 @@
 from calendar import monthrange
 import datetime
+from numpy import record
 import openpyxl as opx
 import pandas as pd
 import upload
@@ -23,33 +24,126 @@ pig_id = individual['M1'].value
 def buy_age(population, pig_id):                                 # recording new piglets
     print("=========================================\n\t\tPIGLET\n")
 
-    population += 1     # add to number of pigs
+    # Number of new updates
+    m_piglet = int(input("How many male piglets: "))
+    f_piglet = int(input("How many female piglets: "))
+    piglets = m_piglet + f_piglet
+
+    # Population Update
+    population += piglets
     whole.cell(column=2, row=month + 1).value = population
-    # to ensure nxt mnt pop not 0
     whole.cell(column=2, row=month + 2).value = population
 
-    pig_id += 1
-    individual['M1'].value = pig_id
-    rw = pig_id + 1
-    individual.cell(row=rw, column=1).value = pig_id
-    print("\nThe pig's ID is: ", pig_id)
+    bred_bought = int(input("\n[1] - Bred\n[2] - Bought\n"))
 
-    sex = int(input("[1] - Male\n[0] - Female\n"))
-    individual.cell(row=rw, column=12).value = sex
-    age_bought = int(input("\nEnter Age of piglet (weeks): "))
-    purchase_date = today         # code to record date
-    date_born = purchase_date - datetime.timedelta(days=7 * age_bought)
-    individual.cell(row=rw, column=11).value = purchase_date
-    individual.cell(row=rw, column=2).value = date_born
+    if bred_bought == 1:  # bred
 
-    purchase_price = int(input("\nEnter purchase price: E"))
-    individual.cell(row=rw, column=3).value = purchase_price
+        # choose piglet parents
+        sow = str(input("Mother ID: "))
+        sire = str(input("Father ID: "))
+        parents = sow + "," + sire
 
-    breed = str(input("\nEnter breed name (small letters): "))
-    individual.cell(row=rw, column=8).value = breed
+        while piglets > 0:  # used to write a new row entry for each piglet
 
-    individual.cell(row=rw, column=10).value = 0  # no feed eaten
-    individual.cell(row=rw, column=9).value = 0  # no meds taken
+            pig_id += 1
+
+            # write piglet id on spreadsheet
+            rw = pig_id
+            individual.cell(row=rw, column=1).value = pig_id
+            individual.cell(row=1, column=13).value = pig_id
+
+            # enter date born
+            date_born = today
+            individual.cell(row=rw, column=2).value = date_born
+
+            # record sire and sow
+            individual.cell(row=rw, column=8).value = parents
+
+            # sex of piglets
+            if m_piglet > 0:
+                m_piglet -= 1
+                individual.cell(row=rw, column=12).value = 1
+            else:
+                individual.cell(row=rw, column=12).value = 0
+
+            individual.cell(row=rw, column=10).value = 0    # no feed eaten
+            individual.cell(row=rw, column=9).value = 0     # no meds taken
+            individual.cell(row=rw, column=11).value = 0    # no purchase date
+            individual.cell(row=rw, column=3).value = 0     # no purchase price
+
+            piglets -= 1
+
+    if bred_bought == 2:  # bred
+
+        purchase_price = int(input("\nEnter purchase price: E"))
+
+        age_bought = int(input("\nEnter Age of piglet (weeks): "))
+
+        breed = str(input("\nEnter breed name (small letters): "))
+
+        while piglets > 0:  # used to write a new row entry for each piglet
+
+            pig_id += 1
+
+            # write piglet id on spreadsheet
+            rw = pig_id
+            individual.cell(row=rw, column=1).value = pig_id
+            individual.cell(row=1, column=13).value = pig_id
+
+            # Assign Sex
+            if m_piglet > 0:
+                m_piglet -= 1
+                individual.cell(row=rw, column=12).value = 1
+            else:
+                individual.cell(row=rw, column=12).value = 0
+
+            # record purchase date
+            purchase_date = today
+            individual.cell(row=rw, column=11).value = purchase_date
+
+            # calculate date born and record it
+            date_born = purchase_date - datetime.timedelta(days=7 * age_bought)
+            individual.cell(row=rw, column=2).value = date_born
+
+            # record purchase price
+            individual.cell(row=rw, column=3).value = purchase_price
+
+            # record breed
+            individual.cell(row=rw, column=8).value = breed
+
+            individual.cell(row=rw, column=10).value = 0  # no feed eaten
+            individual.cell(row=rw, column=9).value = 0  # no meds taken
+            piglets-=1
+
+    elif bred_bought == 3:
+
+        pig_id += 1
+        individual['M1'].value = pig_id
+        rw = pig_id + 1
+        print("\nThe pig's ID is: ", pig_id)
+
+        # Assign Sex
+        sex = int(input("[1] - Male\n[0] - Female\n"))
+        individual.cell(row=rw, column=12).value = sex
+
+        age_bought = int(input("\nEnter Age of piglet (weeks): "))
+        purchase_date = today         # code to record date
+        individual.cell(row=rw, column=11).value = purchase_date
+
+        date_born = purchase_date - datetime.timedelta(days=7 * age_bought)
+        individual.cell(row=rw, column=2).value = date_born
+
+        purchase_price = int(input("\nEnter purchase price: E"))
+        individual.cell(row=rw, column=3).value = purchase_price
+
+        breed = str(input("\nEnter breed name (small letters): "))
+        individual.cell(row=rw, column=8).value = breed
+
+        individual.cell(row=rw, column=10).value = 0  # no feed eaten
+        individual.cell(row=rw, column=9).value = 0  # no meds taken
+        individual.cell(row=rw, column=13).value = pig_id
+
+    piglets -= 1
 
 
 def consumables():                                               # resources spent on well being
